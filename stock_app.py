@@ -78,7 +78,8 @@ class StockApp(tk.Tk):
         self.real_time_label = tk.Label(self, text="Real-Time Price: N/A")
         self.real_time_label.pack()
 
-    def analyze_stock(self):
+    def analyze_stock(self) -> None:
+        """Analyze the historical stock data."""
         stock_symbol = self.symbol_entry.get().strip().upper()
         start_date = self.start_date_entry.get_date().strftime("%Y-%m-%d")
         end_date = self.end_date_entry.get_date().strftime("%Y-%m-%d")
@@ -94,12 +95,16 @@ class StockApp(tk.Tk):
             messagebox.showerror("Error", f"Error fetching data: {e!s}")
             return
 
-    def fetch_stock_data(self, symbol, start_date, end_date):
+    def fetch_stock_data(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> yf.Ticker:
+        """Fetch historical stock data for the given symbol and date range."""
         return yf.download(symbol, start=start_date, end=end_date)
 
-    def analyze_and_plot(self, symbol, data):
-        date_close = data.reset_index()[["Date", "Close"]]
-        date_close = date_close.rename(columns={"Date": "ds", "Close": "y"})
+    def analyze_and_plot(self, symbol: str, data: yf.Ticker) -> None:
+        """Analyze and plot the historical stock data."""
+        df = data.reset_index()[["Date", "Close"]]
+        df = df.rename(columns={"Date": "ds", "Close": "y"})
 
         plt.figure(figsize=(12, 6))
         plt.plot(df["ds"], df["y"], label="Historical Prices")
@@ -110,14 +115,17 @@ class StockApp(tk.Tk):
         plt.grid(True)
         plt.show()
 
-    def plot_stock_data(self, symbol, data):
+    def plot_stock_data(self, symbol: str, data: yf.Ticker) -> None:
+        """Plot historical stock data."""
         df = data.reset_index()[["Date", "Close"]]
         df = df.rename(columns={"Date": "ds", "Close": "y"})
 
-        # Use a suitable label format
-        plt.plot(df["ds"], df["y"], label=symbol.replace(" ", "_"))
+        plt.plot(
+            df["ds"], df["y"], label=symbol.replace(" ", "_")
+        )  # Use a suitable label format
 
-    def analyze_portfolio(self):
+    def analyze_portfolio(self) -> None:
+        """Analyze the portfolio of stocks."""
         if not self.portfolio:
             messagebox.showinfo("Info", "Portfolio is empty.")
             return
@@ -143,7 +151,8 @@ class StockApp(tk.Tk):
         plt.grid(True)
         plt.show()
 
-    def predict_stock(self):
+    def predict_stock(self) -> None:
+        """Predict and plot the stock price."""
         if not hasattr(self, "stock_data"):
             messagebox.showerror("Error", "Please fetch data first.")
             return
@@ -151,7 +160,8 @@ class StockApp(tk.Tk):
         symbol = self.symbol_entry.get().strip().upper()
         self.predict_and_plot(symbol, self.stock_data)
 
-    def predict_and_plot(self, symbol, data):
+    def predict_and_plot(self, symbol: str, data: yf.Ticker) -> None:
+        """Predict and plot the stock price."""
         df = data.reset_index()[["Date", "Close"]]
         df = df.rename(columns={"Date": "ds", "Close": "y"})
 
@@ -176,7 +186,8 @@ class StockApp(tk.Tk):
         plt.grid(True)
         plt.show()
 
-    def add_to_portfolio(self):
+    def add_to_portfolio(self) -> None:
+        """Add a stock symbol to the portfolio."""
         stock_symbol = self.symbol_entry.get().strip().upper()
         if stock_symbol not in self.portfolio:
             self.portfolio.append(stock_symbol)
@@ -184,13 +195,15 @@ class StockApp(tk.Tk):
         else:
             messagebox.showinfo("Info", f"{stock_symbol} is already in the portfolio.")
 
-    def view_portfolio(self):
+    def view_portfolio(self) -> None:
+        """View the portfolio of stock symbols."""
         portfolio_info = (
             "\n".join(self.portfolio) if self.portfolio else "Portfolio is empty."
         )
         messagebox.showinfo("Portfolio", portfolio_info)
 
-    async def fetch_real_time_data(self, symbol):
+    async def fetch_real_time_data(self, symbol: str) -> None:
+        """Fetch real-time stock data asynchronously."""
         async with websockets.connect(
             f"wss://realtime-stock-api.com/ws/stocks/{symbol}"
         ) as websocket:
@@ -200,14 +213,17 @@ class StockApp(tk.Tk):
                 price = stock_data["price"]
                 self.update_real_time_price(price)
 
-    def start_real_time_data(self, symbol):
+    def start_real_time_data(self, symbol: str) -> None:
+        """Start fetching real-time stock data."""
         loop = asyncio.get_event_loop()
         loop.create_task(self.fetch_real_time_data(symbol))
 
-    def update_real_time_price(self, price):
+    def update_real_time_price(self, price: str) -> None:
+        """Update the real-time stock price label."""
         self.real_time_label.config(text=f"Real-Time Price: {price} USD")
 
 
 if __name__ == "__main__":
     app = StockApp()
     app.mainloop()
+    
