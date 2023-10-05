@@ -1,12 +1,14 @@
-import tkinter as tk
-from tkinter import messagebox
-from tkcalendar import DateEntry
-import yfinance as yf
-import matplotlib.pyplot as plt
-from prophet import Prophet
-import websockets
 import asyncio
 import json
+import tkinter as tk
+from tkinter import messagebox
+
+import matplotlib.pyplot as plt
+import websockets
+import yfinance as yf
+from prophet import Prophet
+from tkcalendar import DateEntry
+
 
 class StockApp(tk.Tk):
     def __init__(self):
