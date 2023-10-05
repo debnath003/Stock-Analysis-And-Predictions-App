@@ -98,8 +98,8 @@ class StockApp(tk.Tk):
         return yf.download(symbol, start=start_date, end=end_date)
 
     def analyze_and_plot(self, symbol, data):
-        df = data.reset_index()[["Date", "Close"]]
-        df = df.rename(columns={"Date": "ds", "Close": "y"})
+        date_close = data.reset_index()[["Date", "Close"]]
+        date_close = date_close.rename(columns={"Date": "ds", "Close": "y"})
 
         plt.figure(figsize=(12, 6))
         plt.plot(df["ds"], df["y"], label="Historical Prices")
