@@ -4,13 +4,33 @@ import tkinter as tk
 from tkinter import messagebox
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import websockets
 import yfinance as yf
 from prophet import Prophet
 from tkcalendar import DateEntry
 
+"""
+Stock Analysis and Prediction App
+
+This module contains the implementation of a Tkinter-based GUI application for
+analyzing and predicting stock market data.
+
+Author: Your Name
+"""
+
+
 class StockApp(tk.Tk):
-    def __init__(self):
+    """
+    A class representing a Stock Market Analysis and Prediction App.
+    """
+
+    def __init__(self) -> None:
+        """
+        Initialize the StockApp.
+
+        This method sets up the main application window and initializes many components.
+        """
         super().__init__()
 
         self.title("Stock Market Analysis and Prediction App")
@@ -78,7 +98,9 @@ class StockApp(tk.Tk):
         self.real_time_label.pack()
 
     def analyze_stock(self) -> None:
-        """Analyze the historical stock data."""
+        """
+        Analyze the historical stock data.
+        """
         stock_symbol = self.symbol_entry.get().strip().upper()
         start_date = self.start_date_entry.get_date().strftime("%Y-%m-%d")
         end_date = self.end_date_entry.get_date().strftime("%Y-%m-%d")
@@ -90,21 +112,27 @@ class StockApp(tk.Tk):
         try:
             self.stock_data = self.fetch_stock_data(stock_symbol, start_date, end_date)
             self.analyze_and_plot(stock_symbol, self.stock_data)
-        except yf.errors.YFinanceError as e:
+        except yf.errors.YFinanceError as e:  # Catch specific exception
             messagebox.showerror("Error", f"Error fetching data: {e!s}")
             return
 
-    def fetch_stock_data(self, symbol: str, start_date: str, end_date: str) -> yf.Ticker:
-        """Fetch historical stock data for the given symbol and date range."""
+    def fetch_stock_data(
+        self, symbol: str, start_date: str, end_date: str
+    ) -> pd.DataFrame:
+        """
+        Fetch historical stock data for the given symbol and date range.
+        """
         return yf.download(symbol, start=start_date, end=end_date)
 
     def analyze_and_plot(self, symbol: str, data: yf.Ticker) -> None:
-        """Analyze and plot the historical stock data."""
-        df = data.reset_index()[["Date", "Close"]]
-        df = df.rename(columns={"Date": "ds", "Close": "y"})
+        """
+        Analyze and plot the historical stock data.
+        """
+        stock_data_df = data.reset_index()[["Date", "Close"]]
+        stock_data_df = stock_data_df.rename(columns={"Date": "ds", "Close": "y"})
 
         plt.figure(figsize=(12, 6))
-        plt.plot(df["ds"], df["y"], label="Historical Prices")
+        plt.plot(stock_data_df["ds"], stock_data_df["y"], label="Historical Prices")
         plt.title(f"{symbol} Stock Price Analysis")
         plt.xlabel("Date")
         plt.ylabel("Price (USD)")
@@ -113,16 +141,18 @@ class StockApp(tk.Tk):
         plt.show()
 
     def plot_stock_data(self, symbol: str, data: yf.Ticker) -> None:
-        """Plot historical stock data."""
+        """
+        Plot historical stock data.
+        """
         df = data.reset_index()[["Date", "Close"]]
         df = df.rename(columns={"Date": "ds", "Close": "y"})
 
-        plt.plot(
-            df["ds"], df["y"], label=symbol.replace(" ", "_")
-        )
+        plt.plot(df["ds"], df["y"], label=symbol.replace(" ", "_"))
 
     def analyze_portfolio(self) -> None:
-        """Analyze the portfolio of stocks."""
+        """
+        Analyze the portfolio of stocks.
+        """
         if not self.portfolio:
             messagebox.showinfo("Info", "Portfolio is empty.")
             return
@@ -149,7 +179,9 @@ class StockApp(tk.Tk):
         plt.show()
 
     def predict_stock(self) -> None:
-        """Predict and plot the stock price."""
+        """
+        Predict and plot the stock price.
+        """
         if not hasattr(self, "stock_data"):
             messagebox.showerror("Error", "Please fetch data first.")
             return
@@ -158,7 +190,9 @@ class StockApp(tk.Tk):
         self.predict_and_plot(symbol, self.stock_data)
 
     def predict_and_plot(self, symbol: str, data: yf.Ticker) -> None:
-        """Predict and plot the stock price."""
+        """
+        Predict and plot the stock price.
+        """
         df = data.reset_index()[["Date", "Close"]]
         df = df.rename(columns={"Date": "ds", "Close": "y"})
 
@@ -184,7 +218,9 @@ class StockApp(tk.Tk):
         plt.show()
 
     def add_to_portfolio(self) -> None:
-        """Add a stock symbol to the portfolio."""
+        """
+        Add a stock symbol to the portfolio.
+        """
         stock_symbol = self.symbol_entry.get().strip().upper()
         if stock_symbol not in self.portfolio:
             self.portfolio.append(stock_symbol)
@@ -193,14 +229,18 @@ class StockApp(tk.Tk):
             messagebox.showinfo("Info", f"{stock_symbol} is already in the portfolio.")
 
     def view_portfolio(self) -> None:
-        """View the portfolio of stock symbols."""
+        """
+        View the portfolio of stock symbols.
+        """
         portfolio_info = (
             "\n".join(self.portfolio) if self.portfolio else "Portfolio is empty."
         )
         messagebox.showinfo("Portfolio", portfolio_info)
 
     async def fetch_real_time_data(self, symbol: str) -> None:
-        """Fetch real-time stock data asynchronously."""
+        """
+        Fetch real-time stock data asynchronously.
+        """
         async with websockets.connect(
             f"wss://realtime-stock-api.com/ws/stocks/{symbol}"
         ) as websocket:
@@ -211,13 +251,18 @@ class StockApp(tk.Tk):
                 self.update_real_time_price(price)
 
     def start_real_time_data(self, symbol: str) -> None:
-        """Start fetching real-time stock data."""
+        """
+        Start fetching real-time stock data.
+        """
         loop = asyncio.get_event_loop()
         loop.create_task(self.fetch_real_time_data(symbol))
 
     def update_real_time_price(self, price: str) -> None:
-        """Update the real-time stock price label."""
+        """
+        Update the real-time stock price label.
+        """
         self.real_time_label.config(text=f"Real-Time Price: {price} USD")
+
 
 if __name__ == "__main__":
     app = StockApp()
