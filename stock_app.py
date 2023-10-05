@@ -114,9 +114,8 @@ class StockApp(tk.Tk):
         df = data.reset_index()[["Date", "Close"]]
         df = df.rename(columns={"Date": "ds", "Close": "y"})
 
-        plt.plot(
-            df["ds"], df["y"], label=symbol.replace(" ", "_")
-        )  # Use a suitable label format
+        # Use a suitable label format
+        plt.plot(df["ds"], df["y"], label=symbol.replace(" ", "_"))
 
     def analyze_portfolio(self):
         if not self.portfolio:
