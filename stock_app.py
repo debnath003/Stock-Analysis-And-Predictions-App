@@ -166,7 +166,7 @@ class StockApp(tk.Tk):
             try:
                 stock_data = self.fetch_stock_data(symbol, start_date, end_date)
                 self.plot_stock_data(symbol, stock_data)
-            except yf.errors.YFinanceError as e:
+            except yf.errors.YFinanceError as e:  # noqa: PERF203
                 messagebox.showerror(
                     "Error", f"Error fetching data for {symbol}: {e!s}"
                 )
