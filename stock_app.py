@@ -9,7 +9,6 @@ import yfinance as yf
 from prophet import Prophet
 from tkcalendar import DateEntry
 
-
 class StockApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -25,7 +24,7 @@ class StockApp(tk.Tk):
         y_position = (screen_height - window_height) // 2
         self.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
-        self.resizable(width=False, height=False)  # Use named arguments for clarity
+        self.resizable(width=False, height=False)
 
         self.portfolio = []  # Portfolio symbols storing
 
@@ -91,13 +90,11 @@ class StockApp(tk.Tk):
         try:
             self.stock_data = self.fetch_stock_data(stock_symbol, start_date, end_date)
             self.analyze_and_plot(stock_symbol, self.stock_data)
-        except yf.errors.YFinanceError as e:  # Catch specific exception
+        except yf.errors.YFinanceError as e:
             messagebox.showerror("Error", f"Error fetching data: {e!s}")
             return
 
-    def fetch_stock_data(
-        self, symbol: str, start_date: str, end_date: str
-    ) -> yf.Ticker:
+    def fetch_stock_data(self, symbol: str, start_date: str, end_date: str) -> yf.Ticker:
         """Fetch historical stock data for the given symbol and date range."""
         return yf.download(symbol, start=start_date, end=end_date)
 
@@ -122,7 +119,7 @@ class StockApp(tk.Tk):
 
         plt.plot(
             df["ds"], df["y"], label=symbol.replace(" ", "_")
-        )  # Use a suitable label format
+        )
 
     def analyze_portfolio(self) -> None:
         """Analyze the portfolio of stocks."""
@@ -139,7 +136,7 @@ class StockApp(tk.Tk):
             try:
                 stock_data = self.fetch_stock_data(symbol, start_date, end_date)
                 self.plot_stock_data(symbol, stock_data)
-            except yf.errors.YFinanceError as e:  # Catch specific exception
+            except yf.errors.YFinanceError as e:
                 messagebox.showerror(
                     "Error", f"Error fetching data for {symbol}: {e!s}"
                 )
@@ -222,8 +219,6 @@ class StockApp(tk.Tk):
         """Update the real-time stock price label."""
         self.real_time_label.config(text=f"Real-Time Price: {price} USD")
 
-
 if __name__ == "__main__":
     app = StockApp()
     app.mainloop()
-    
