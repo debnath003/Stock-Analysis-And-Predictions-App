@@ -137,17 +137,17 @@ class StockApp(tk.Tk):
         plt.xlabel("Date")
         plt.ylabel("Price (USD)")
         plt.legend()
-        plt.grid(True)
+        plt.grid(visible=True)
         plt.show()
 
     def plot_stock_data(self, symbol: str, data: yf.Ticker) -> None:
         """
         Plot historical stock data.
         """
-        df = data.reset_index()[["Date", "Close"]]
-        df = df.rename(columns={"Date": "ds", "Close": "y"})
+        date_close = data.reset_index()[["Date", "Close"]]
+        date_close = date_close.rename(columns={"Date": "ds", "Close": "y"})
 
-        plt.plot(df["ds"], df["y"], label=symbol.replace(" ", "_"))
+        plt.plot(date_close["ds"], date_close["y"], label=symbol.replace(" ", "_"))
 
     def analyze_portfolio(self) -> None:
         """
@@ -166,7 +166,7 @@ class StockApp(tk.Tk):
             try:
                 stock_data = self.fetch_stock_data(symbol, start_date, end_date)
                 self.plot_stock_data(symbol, stock_data)
-            except yf.errors.YFinanceError as e:
+            except yf.errors.YFinanceError as e:  # noqa: PERF203
                 messagebox.showerror(
                     "Error", f"Error fetching data for {symbol}: {e!s}"
                 )
@@ -175,7 +175,7 @@ class StockApp(tk.Tk):
         plt.xlabel("Date")
         plt.ylabel("Price (USD)")
         plt.legend()
-        plt.grid(True)
+        plt.grid(visible=True)
         plt.show()
 
     def predict_stock(self) -> None:
@@ -193,17 +193,17 @@ class StockApp(tk.Tk):
         """
         Predict and plot the stock price.
         """
-        df = data.reset_index()[["Date", "Close"]]
-        df = df.rename(columns={"Date": "ds", "Close": "y"})
+        date_close = data.reset_index()[["Date", "Close"]]
+        date_close = date_close.rename(columns={"Date": "ds", "Close": "y"})
 
         model = Prophet(daily_seasonality=True)
-        model.fit(df)
+        model.fit(date_close)
 
         future = model.make_future_dataframe(periods=1825)
         forecast = model.predict(future)
 
         plt.figure(figsize=(12, 6))
-        plt.plot(df["ds"], df["y"], label="Actual Prices")
+        plt.plot(date_close["ds"], date_close["y"], label="Actual Prices")
         plt.plot(
             forecast["ds"],
             forecast["yhat"],
@@ -214,7 +214,7 @@ class StockApp(tk.Tk):
         plt.xlabel("Date")
         plt.ylabel("Price (USD)")
         plt.legend()
-        plt.grid(True)
+        plt.grid(visible=True)
         plt.show()
 
     def add_to_portfolio(self) -> None:
